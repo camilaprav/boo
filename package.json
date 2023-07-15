@@ -1,0 +1,14 @@
+{
+  "name": "boo",
+  "version": "1.0.0",
+  "description": "JavaScript overlays",
+  "main": "index.js",
+  "scripts": {
+    "test": "serve ."
+  },
+  "author": "Gui Prá (gui@guiprav.com)",
+  "license": "ISC",
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}

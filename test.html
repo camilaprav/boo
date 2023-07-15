@@ -1,0 +1,56 @@
+<!doctype html>
+<meta charset="utf-8">
+
+<style>
+  div {
+    display: flex;
+    height: 100vh;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  span {
+    width: 64px;
+    height: 64px;
+    background-color: salmon;
+  }
+
+  label {
+    border: 1px solid black;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .transition {
+    transition: 1s ease all;
+  }
+</style>
+
+<label></label>
+
+<div>
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+
+<script type="module">
+  import Boo from './index.js';
+
+  let selected = document.querySelector('span');
+  addEventListener('click', ev => {
+    if (ev.target.tagName !== 'SPAN') { return }
+    selected = ev.target;
+  });
+
+  let ov = document.querySelector('label');
+  let boo = new Boo(ov, () => selected, {
+    transitionClass: 'transition',
+  });
+</script>
