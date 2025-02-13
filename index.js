@@ -41,8 +41,8 @@ class Boo {
       if (container.style.position === 'static') {
         container.style.position = 'relative';
       }
-      ov.style.left = `${targetRect.left}px`;
-      ov.style.top = `${targetRect.top}px`;
+      ov.style.left = `${targetRect.left + window.scrollX}px`;
+      ov.style.top = `${targetRect.top + window.scrollY}px`;
       ov.style.width = `${targetRect.width}px`;
       ov.style.height = `${targetRect.height}px`;
     }
