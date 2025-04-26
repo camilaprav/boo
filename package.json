@@ -1,6 +1,6 @@
 {
-  "name": "boo-overlays",
-  "version": "1.0.1",
+  "name": "@camilaprav/boo",
+  "version": "1.0.2",
   "description": "JavaScript overlays",
   "main": "index.js",
   "scripts": {

@@ -23,8 +23,16 @@ class Boo {
     let originRect = origin?.getBoundingClientRect?.();
     let targetRect = target?.getBoundingClientRect?.();
     if (targetRect) {
-      ov.style.borderRadius = getComputedStyle(target).borderRadius;
+      let radius = getComputedStyle(target).borderRadius;
+      if (radius !== this.oldRadius) {
+        ov.style.borderRadius = radius;
+        this.oldRadius = radius;
+      }
     }
+    if (JSON.stringify(this.oldTargetRect) === JSON.stringify(targetRect)) {
+      return requestAnimationFrame(this.frame);
+    }
+    this.oldTargetRect = targetRect;
     if (this.smallClass) {
       ov.classList.toggle(
         this.smallClass,
@@ -76,7 +84,7 @@ class Boo {
         ov.style.clipPath = '';
       }
     }
-    window.requestAnimationFrame(this.frame);
+    requestAnimationFrame(this.frame);
   };
 
   enable(x = true) {
