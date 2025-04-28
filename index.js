@@ -20,7 +20,7 @@ class Boo {
     let ov = resolve(this.ov);
     let targetRect = target?.getBoundingClientRect?.();
     if (!targetRect) {
-      requestAnimationFrame(this.frame);
+      this.raf = requestAnimationFrame(this.frame);
       return;
     }
     let finalRect = {
@@ -63,7 +63,7 @@ class Boo {
       );
       this.lastTarget = target;
     }
-    ov.classList[targetRect && container ? 'remove' : 'add'](this.hiddenClass);
+    ov.classList[targetRect && (targetRect.width > 0 || targetRect.height > 0) && container ? 'remove' : 'add'](this.hiddenClass);
     if (!ov.classList.contains(this.hiddenClass) && finalRect) {
       if (container === document.body) {
         ov.style.position = 'fixed';
@@ -102,13 +102,14 @@ class Boo {
         ov.style.clipPath = '';
       }
     }
-    requestAnimationFrame(this.frame);
+    this.raf = requestAnimationFrame(this.frame);
   };
 
   enable(x = true) {
     if (x) {
       this.container.append(this.ov);
     } else {
+      cancelAnimationFrame(this.raf);
       this.ov.remove();
     }
     this.enabled = x;
