@@ -64,7 +64,6 @@ class Boo {
       this.lastTarget = target;
     }
     ov.classList[targetRect && container ? 'remove' : 'add'](this.hiddenClass);
-    console.log(finalRect);
     if (!ov.classList.contains(this.hiddenClass) && finalRect) {
       if (container === document.body) {
         ov.style.position = 'fixed';
