@@ -7,7 +7,6 @@ class Boo {
       target,
       ...opt,
       container: opt.container || document.body,
-      origin: opt.origin || document,
       hiddenClass: opt.hiddenClass || 'hidden',
     });
     this.enable();
@@ -18,16 +17,30 @@ class Boo {
     if (!this.enabled) return;
     let target = resolve(this.target);
     let container = resolve(this.container);
-    let origin = resolve(this.origin);
     let ov = resolve(this.ov);
-    let originRect = origin?.getBoundingClientRect?.();
     let targetRect = target?.getBoundingClientRect?.();
-    if (targetRect) {
-      let radius = getComputedStyle(target).borderRadius;
-      if (radius !== this.oldRadius) {
-        ov.style.borderRadius = radius;
-        this.oldRadius = radius;
+    if (!targetRect) {
+      requestAnimationFrame(this.frame);
+      return;
+    }
+    let finalRect = {
+      left: targetRect.left,
+      top: targetRect.top,
+      width: targetRect.width,
+      height: targetRect.height,
+    };
+    if (target?.ownerDocument !== ov?.ownerDocument) {
+      let frame = target?.ownerDocument?.defaultView?.frameElement;
+      if (frame) {
+        let frameRect = frame.getBoundingClientRect();
+        finalRect.left += frameRect.left;
+        finalRect.top += frameRect.top;
       }
+    }
+    let radius = getComputedStyle(target).borderRadius;
+    if (radius !== this.oldRadius) {
+      ov.style.borderRadius = radius;
+      this.oldRadius = radius;
     }
     if (JSON.stringify(this.oldTargetRect) === JSON.stringify(targetRect)) {
       return requestAnimationFrame(this.frame);
@@ -51,35 +64,41 @@ class Boo {
       this.lastTarget = target;
     }
     ov.classList[targetRect && container ? 'remove' : 'add'](this.hiddenClass);
-    if (!ov.classList.contains(this.hiddenClass) && targetRect) {
-      ov.style.position = 'absolute';
-      ov.style.boxSizing = 'border-box';
-      if (container.style.position === 'static') {
-        container.style.position = 'relative';
+    console.log(finalRect);
+    if (!ov.classList.contains(this.hiddenClass) && finalRect) {
+      if (container === document.body) {
+        ov.style.position = 'fixed';
+        ov.style.left = `${finalRect.left}px`;
+        ov.style.top = `${finalRect.top}px`;
+      } else {
+        ov.style.position = 'absolute';
+        let containerRect = container.getBoundingClientRect();
+        ov.style.left = `${finalRect.left - containerRect.left}px`;
+        ov.style.top = `${finalRect.top - containerRect.top}px`;
+        if (container.style.position === 'static') {
+          container.style.position = 'relative';
+        }
       }
-      let or = originRect || { left: 0, top: 0 };
-      ov.style.left = `${or.left + targetRect.left}px`;
-      ov.style.top = `${or.top + targetRect.top}px`;
-      ov.style.width = `${targetRect.width}px`;
-      ov.style.height = `${targetRect.height}px`;
-      let clipRect =
-        target?.ownerDocument?.defaultView?.frameElement?.getBoundingClientRect();
-      let ovRect = ov.getBoundingClientRect();
-      let localClipRect = clipRect && {
-        left: clipRect.left - ovRect.left,
-        top: clipRect.top - ovRect.top,
-      };
-      Object.assign(localClipRect, {
-        right: localClipRect.left + clipRect.width,
-        bottom: localClipRect.top + clipRect.height,
-      });
-      if (clipRect) {
-        ov.style.clipPath = `polygon(
-          ${localClipRect.left}px ${localClipRect.top}px,
-          ${localClipRect.right}px ${localClipRect.top}px,
-          ${localClipRect.right}px ${localClipRect.bottom}px,
-          ${localClipRect.left}px ${localClipRect.bottom}px
-        )`;
+      ov.style.boxSizing = 'border-box';
+      ov.style.width = `${finalRect.width}px`;
+      ov.style.height = `${finalRect.height}px`;
+      if (target?.ownerDocument !== ov?.ownerDocument) {
+        let frame = target?.ownerDocument?.defaultView?.frameElement;
+        if (frame) {
+          let frameRect = frame.getBoundingClientRect();
+          let clipLeft = frameRect.left - finalRect.left;
+          let clipTop = frameRect.top - finalRect.top;
+          let clipRight = clipLeft + frameRect.width;
+          let clipBottom = clipTop + frameRect.height;
+          ov.style.clipPath = `polygon(
+            ${clipLeft}px ${clipTop}px,
+            ${clipRight}px ${clipTop}px,
+            ${clipRight}px ${clipBottom}px,
+            ${clipLeft}px ${clipBottom}px
+          )`;
+        } else {
+          ov.style.clipPath = '';
+        }
       } else {
         ov.style.clipPath = '';
       }
