@@ -7,6 +7,7 @@ class Boo {
       target,
       ...opt,
       container: opt.container || document.body,
+      containerOverlayPosition: opt.containerOverlayPosition || 'end',
       hiddenClass: opt.hiddenClass || 'hidden',
     });
     this.enable();
@@ -107,7 +108,7 @@ class Boo {
 
   enable(x = true) {
     if (x) {
-      this.container.append(this.ov);
+      this.container[{ start: 'prepend', end: 'append' }[this.containerOverlayPosition]](this.ov);
     } else {
       cancelAnimationFrame(this.raf);
       this.ov.remove();

@@ -1,8 +1,8 @@
 {
   "name": "@camilaprav/boo",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "JavaScript overlays",
-  "main": "index.js",
+  "main": "boo.js",
   "scripts": {
     "test": "serve ."
   },
